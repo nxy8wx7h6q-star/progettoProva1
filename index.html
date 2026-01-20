@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calcolatore di Compatibilità</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #ff8ba7 0, #3b1c59 55%, #05051a 100%);
+      color: #fdf2f8;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 480px;
+      background: rgba(7, 6, 30, 0.9);
+      border-radius: 24px;
+      padding: 24px 24px 28px;
+      box-shadow:
+        0 22px 45px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(18px);
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .icon-heart {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 20%, #ff9aa2 0, #ff477e 40%, #9d174d 100%);
+      box-shadow: 0 0 22px rgba(248, 113, 150, 0.7);
+      animation: pulse 2s infinite;
+    }
+
+    .icon-heart svg {
+      width: 22px;
+      height: 22px;
+      fill: #ffe4e6;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 22px rgba(248, 113, 150, 0.7);
+      }
+      50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 35px rgba(248, 113, 150, 0.9);
+      }
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    .form {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .field-label {
+      font-size: 0.8rem;
+      color: #cbd5f5;
+      margin-bottom: 4px;
+    }
+
+    .input-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    @media (min-width: 480px) {
+      .input-row {
+        flex-direction: row;
+      }
+    }
+
+    .field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    input[type="text"] {
+      padding: 10px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(15, 23, 42, 0.9);
+      color: #f9fafb;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    input[type="text"]::placeholder {
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    input[type="text"]:focus {
+      border-color: #fb7185;
+      box-shadow: 0 0 0 1px rgba(248, 113, 150, 0.75);
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .button-row {
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      border: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #0f172a;
+      background: linear-gradient(135deg, #fb7185, #f97316);
+      box-shadow:
+        0 10px 25px rgba(248, 113, 150, 0.5),
+        0 0 0 1px rgba(248, 250, 252, 0.08);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+      box-shadow:
+        0 14px 30px rgba(248, 113, 150, 0.7),
+        0 0 0 1px rgba(248, 250, 252, 0.18);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow:
+        0 6px 16px rgba(248, 113, 150, 0.55),
+        0 0 0 1px rgba(248, 250, 252, 0.18);
+    }
+
+    .btn-secondary {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: transparent;
+      color: #e5e7eb;
+      padding: 9px 12px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(148, 163, 184, 0.2);
+      border-color: rgba(248, 250, 252, 0.6);
+    }
+
+    .result-card {
+      margin-top: 18px;
+      border-radius: 20px;
+      background: radial-gradient(circle at top left, rgba(248, 113, 150, 0.25), transparent 58%),
+        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.2), transparent 55%);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      padding: 14px 14px 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .compat-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #cbd5f5;
+      opacity: 0.85;
+    }
+
+    .compat-score {
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+
+    .compat-score span {
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .names-line {
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .names-line span {
+      font-weight: 600;
+      color: #fee2e2;
+    }
+
+    .message {
+      font-size: 0.8rem;
+      color: #e5e7eb;
+      opacity: 0.9;
+    }
+
+    .meter {
+      margin-top: 10px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .meter-fill {
+      height: 100%;
+      border-radius: 999px;
+      width: 0%;
+      background: linear-gradient(90deg, #ef4444, #f97316, #eab308, #22c55e, #14b8a6, #6366f1);
+      box-shadow: 0 0 16px rgba(251, 113, 133, 0.8);
+      transition: width 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+        box-shadow 0.3s ease;
+    }
+
+    .tiny-note {
+      margin-top: 10px;
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      opacity: 0.75;
+    }
+
+    .tiny-note strong {
+      font-weight: 600;
+      color: #fee2e2;
+    }
+
+    .sparkles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.3;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(248, 250, 252, 0.4) 0, transparent 45%),
+        radial-gradient(circle at 80% 70%, rgba(244, 114, 182, 0.38) 0, transparent 55%);
+      mix-blend-mode: screen;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="app-header">
+      <div class="icon-heart" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M12 21s-5.052-3.196-8.076-6.22C1.402 12.258 1 10.704 1 9.5 1 6.462 3.239 4 6.25 4 8.145 4 9.66 5.12 10.5 6.42 11.34 5.12 12.855 4 14.75 4 17.761 4 20 6.462 20 9.5c0 1.204-.402 2.758-2.924 5.28C17.052 17.804 12 21 12 21z">
+          </path>
+        </svg>
+      </div>
+      <div>
+        <h1>Calcolatore di Compatibilità</h1>
+        <p class="subtitle">Inserisci due nomi e scopri quanto siete "compatibili"!</p>
+      </div>
+    </div>
+
+    <form class="form" id="compatForm">
+      <div class="input-row">
+        <div class="field">
+          <label class="field-label" for="name1">Nome 1</label>
+          <input id="name1" type="text" placeholder="Es. Luca" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label class="field-label" for="name2">Nome 2</label>
+          <input id="name2" type="text" placeholder="Es. Sara" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button type="submit" class="btn-primary">
+          Calcola compatibilità
+        </button>
+        <button type="button" class="btn-secondary" id="swapBtn">
+          Inverti nomi
+        </button>
+      </div>
+    </form>
+
+    <div class="result-card" aria-live="polite" aria-atomic="true">
+      <div class="sparkles"></div>
+      <div class="result-header">
+        <span class="compat-label">Livello di compatibilità</span>
+        <div class="compat-score" id="scoreDisplay">-- <span>%</span></div>
+      </div>
+      <div class="names-line" id="namesLine">
+        Inserisci i nomi qui sopra per iniziare ✨
+      </div>
+      <div class="message" id="message">
+        Questo è solo un gioco divertente basato sui nomi. I veri rapporti dipendono da rispetto, fiducia e comunicazione.
+      </div>
+      <div class="meter">
+        <div class="meter-fill" id="meterFill"></div>
+      </div>
+      <p class="tiny-note">
+        Nota: il calcolo è pseudocasuale ma <strong>sempre uguale</strong> per le stesse due persone (indipendentemente dall'ordine dei nomi).
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("compatForm");
+    const name1Input = document.getElementById("name1");
+    const name2Input = document.getElementById("name2");
+    const scoreDisplay = document.getElementById("scoreDisplay");
+    const namesLine = document.getElementById("namesLine");
+    const message = document.getElementById("message");
+    const meterFill = document.getElementById("meterFill");
+    const swapBtn = document.getElementById("swapBtn");
+
+    // Funzione hash semplice per creare un numero "stabile" a partire da una stringa
+    function stringToNumber(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash);
+    }
+
+    // Calcolo "compatibilità" 0-100 basata sui nomi
+    function calculateCompatibility(nameA, nameB) {
+      const combined = nameA.trim().toLowerCase() + "|" + nameB.trim().toLowerCase();
+      const reversed = nameB.trim().toLowerCase() + "|" + nameA.trim().toLowerCase();
+      const key = combined < reversed ? combined : reversed;
+
+      const num = stringToNumber(key);
+      return (num % 101); // 0-100
+    }
+
+    // Restituisce un messaggio simpatico in base alla percentuale
+    function getCompatibilityMessage(score) {
+      if (score < 20) {
+        return "Siete agli opposti... ma a volte gli opposti si attraggono! Se vi rispettate, tutto è possibile.";
+      } else if (score < 40) {
+        return "Ci sono differenze, ma anche spazio per crescere. Con pazienza e dialogo potete trovare un bel equilibrio.";
+      } else if (score < 60) {
+        return "Buona base di compatibilità! Un mix di somiglianze e differenze che può funzionare molto bene.";
+      } else if (score < 80) {
+        return "Ottima compatibilità! Se coltivate il rapporto con attenzione, può diventare davvero speciale.";
+      } else if (score < 95) {
+        return "Quasi perfetti insieme! Affinità molto alta: con rispetto e cura reciproca potete fare grandi cose.";
+      } else {
+        return "Compatibilità stellare! Ricordate però: i veri legami si costruiscono ogni giorno con piccoli gesti.";
+      }
+    }
+
+    function updateResult() {
+      const n1 = name1Input.value.trim();
+      const n2 = name2Input.value.trim();
+
+      if (!n1 || !n2) {
+        scoreDisplay.textContent = "-- ";
+        const span = document.createElement("span");
+        span.textContent = "%";
+        scoreDisplay.innerHTML = scoreDisplay.textContent;
+        scoreDisplay.appendChild(span);
+        namesLine.textContent = "Inserisci i nomi qui sopra per iniziare ✨";
+        message.textContent = "Questo è solo un gioco divertente basato sui nomi. I veri rapporti dipendono da rispetto, fiducia e comunicazione.";
+        meterFill.style.width = "0%";
+        meterFill.style.boxShadow = "0 0 0 rgba(0,0,0,0)";
+        return;
+      }
+
+      const score = calculateCompatibility(n1, n2);
+
+      scoreDisplay.textContent = score + " ";
+      const span = document.createElement("span");
+      span.textContent = "%";
+      scoreDisplay.appendChild(span);
+
+      namesLine.innerHTML = `<span>${n1 || "??"}</span> &nbsp; ♥ &nbsp; <span>${n2 || "??"}</span>`;
+      message.textContent = getCompatibilityMessage(score);
+
+      meterFill.style.width = score + "%";
+      meterFill.style.boxShadow = "0 0 18px rgba(251, 113, 133, 0.8)";
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      updateResult();
+    });
+
+    swapBtn.addEventListener("click", function () {
+      const temp = name1Input.value;
+      name1Input.value = name2Input.value;
+      name2Input.value = temp;
+      updateResult();
+    });
+
+    // Aggiornamento in tempo reale mentre si scrive (facoltativo ma carino)
+    name1Input.addEventListener("input", () => {
+      if (!name2Input.value.trim()) return;
+      updateResult();
+    });
+    name2Input.addEventListener("input", () => {
+      if (!name1Input.value.trim()) return;
+      updateResult();
+    });
+  </script>
+</body>
+</html>
+
